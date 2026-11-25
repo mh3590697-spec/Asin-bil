@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asan Bill – Electricity Bill Explainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --brand:#1e3a5f; --brand-d:#0f2540; --brand-m:#2c5282; --brand-l:#eef2f7; --brand-line:#d5dfec;
+    --accent:#0f766e; --accent-d:#115e59; --accent-l:#e6f4f2;
+    --gold:#b7893a;
+    --ink:#0f172a; --ink2:#334155; --muted:#64748b;
+    --bg:#f4f6f9; --card:#ffffff; --line:#e3e8ef;
+    --ok:#15803d; --err:#b91c1c; --err-bg:#fef2f2; --err-line:#fecaca;
+    --shadow:0 1px 2px rgba(15,37,64,.05),0 10px 28px rgba(15,37,64,.07);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+
+  /* Header */
+  .topbar{background:linear-gradient(135deg,var(--brand-d) 0%,var(--brand) 60%,var(--brand-m) 100%);color:#fff;border-bottom:3px solid var(--gold)}
+  .topbar-inner{max-width:880px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-mark{width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.1);display:grid;place-items:center;border:1px solid rgba(255,255,255,.22)}
+  .logo-mark svg{width:22px;height:22px}
+  .logo h1{margin:0;font-size:20px;font-weight:800;letter-spacing:-.2px}
+  .logo h1 span{color:#e6c78a}
+  .logo small{display:block;font-size:12px;opacity:.78;font-weight:500;margin-top:1px}
+  .hero{max-width:880px;margin:0 auto;padding:6px 20px 64px}
+  .hero h2{margin:0;font-size:30px;line-height:1.2;font-weight:800;letter-spacing:-.5px}
+  .hero p{margin:10px 0 0;max-width:560px;opacity:.88;font-size:15.5px}
+
+  main{max-width:880px;margin:-40px auto 40px;padding:0 16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:18px;box-shadow:var(--shadow)}
+  .card-head{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+  .badge{width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
+  .card-head h3{margin:0;font-size:18px;font-weight:700;letter-spacing:-.2px}
+  .card-head p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+
+  /* Settings */
+  details.settings summary{cursor:pointer;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;list-style:none;color:var(--ink2)}
+  details.settings summary::-webkit-details-marker{display:none}
+  details.settings summary::after{content:"▾";margin-left:auto;color:var(--muted);transition:.2s}
+  details.settings[open] summary::after{transform:rotate(180deg)}
+  label{display:block;font-size:12.5px;font-weight:600;color:var(--ink2);margin:14px 0 6px}
+  input[type=text],input[type=password],select{width:100%;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font:inherit;font-size:14.5px;background:#fff;color:var(--ink);transition:border .15s,box-shadow .15s}
+  input:focus,select:focus{outline:none;border-color:var(--brand-m);box-shadow:0 0 0 3px rgba(44,82,130,.15)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:600px){.row{grid-template-columns:1fr}}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+
+  /* Buttons */
+  button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 18px;font-weight:600;font-size:15px;transition:background .15s,transform .05s,box-shadow .15s}
+  button:active{transform:translateY(1px)}
+  .primary{background:var(--brand);color:#fff;width:100%;font-size:16px;margin-top:16px;padding:14px 18px;box-shadow:0 4px 12px rgba(30,58,95,.28)}
+  .primary:hover{background:var(--brand-d)}
+  .primary:disabled{background:#9aa8ba;box-shadow:none;cursor:not-allowed}
+  .ghost{background:#fff;border:1px solid var(--line);color:var(--ink2)}
+  .ghost:hover{background:#f8fafc;border-color:#cbd5e1}
+  .accent{background:var(--accent);color:#fff;box-shadow:0 4px 12px rgba(15,118,110,.28);font-size:17px;padding:14px 26px;display:inline-flex;align-items:center;gap:10px}
+  .accent:hover{background:var(--accent-d)}
+  .accent svg{width:20px;height:20px}
+
+  /* Upload */
+  .drop{border:2px dashed #b4c3d8;background:var(--brand-l);border-radius:14px;padding:34px 16px;text-align:center;cursor:pointer;transition:.15s}
+  .drop:hover{border-color:var(--brand-m)}
+  .drop.over{background:#e1e9f3;border-color:var(--brand-m)}
+  .drop .ico{width:54px;height:54px;border-radius:14px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;margin:0 auto 10px;color:var(--brand)}
+  .drop .ico svg{width:26px;height:26px}
+  .drop b{display:block;font-size:15.5px}
+  .drop small{color:var(--muted);font-size:13px}
+  #preview{margin-top:16px;text-align:center}
+  #preview img{max-width:100%;max-height:300px;border-radius:12px;border:1px solid var(--line)}
+  #preview .cap{font-size:12px;color:var(--muted);margin-top:8px}
+
+  /* Progress */
+  .steps{list-style:none;margin:0;padding:0}
+  .steps li{display:flex;align-items:center;gap:12px;padding:9px 0;color:var(--muted);font-size:14.5px}
+  .steps li .dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+  .steps li.active{color:var(--ink);font-weight:600}
+  .steps li.active .dot{border-color:var(--brand-m);border-top-color:transparent;animation:spin 1s linear infinite}
+  .steps li.done{color:var(--ok);font-weight:600}
+  .steps li.done .dot{background:var(--ok);border-color:var(--ok);color:#fff}
+  .steps li.fail{color:var(--err);font-weight:600}
+  .steps li.fail .dot{background:var(--err);border-color:var(--err);color:#fff}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .error{background:var(--err-bg);border:1px solid var(--err-line);color:#7f1d1d;padding:13px 14px;border-radius:12px;margin-top:12px;white-space:pre-wrap;font-size:14px}
+
+  /* Summary */
+  .summary{background:var(--brand-l);border:1px solid var(--brand-line);border-left:4px solid var(--gold);padding:16px 18px;border-radius:12px;font-size:16.5px;line-height:1.75;color:var(--ink)}
+  .player{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;align-items:center}
+  audio{width:100%;margin-top:12px}
+
+  /* Details */
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+  .item{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:#fff}
+  .item .k{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .item .v{font-size:19px;font-weight:700;margin-top:4px;letter-spacing:-.2px}
+  .item .v.na{font-size:13.5px;font-weight:500;color:var(--muted);font-style:italic}
+  .item.hi{background:var(--accent-l);border-color:#bfe0dc}
+  .item.hi .v{color:var(--accent-d)}
+  .notes{font-size:13px;color:var(--muted);margin-top:14px}
+
+  .hidden{display:none!important}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:0 16px 34px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+      </div>
+      <h1>Asan <span>Bill</span><small>Electricity bill explainer</small></h1>
+    </div>
+  </div>
+  <div class="hero">
+    <h2>Understand your electricity bill in minutes</h2>
+    <p>Upload a photo or PDF of your bill. We extract the key figures and read them out to you in clear, simple Roman Urdu.</p>
+  </div>
+</div>
+
+<main>
+
+  <!-- Settings -->
+  <div class="card">
+    <details id="settings" class="settings">
+      <summary>⚙️ API Settings (required on first use)</summary>
+      <label for="groqKey">Groq API Key</label>
+      <input type="password" id="groqKey" placeholder="gsk_..." autocomplete="off">
+      <label for="elevenKey">ElevenLabs API Key</label>
+      <input type="password" id="elevenKey" placeholder="sk_..." autocomplete="off">
+      <div class="row">
+        <div>
+          <label for="visionModel">Groq Vision Model (bill reading)</label>
+          <input type="text" id="visionModel" list="modelList" value="qwen/qwen3.8-27b">
+        </div>
+        <div>
+          <label for="textModel">Groq Text Model (Roman Urdu summary)</label>
+          <input type="text" id="textModel" list="modelList" value="qwen/qwen3.8-27b">
+        </div>
+        <div style="grid-column:1/-1">
+          <button class="ghost" type="button" id="loadModels">🔄 Load models from Groq</button>
+          <datalist id="modelList">
+            <option value="qwen/qwen3.8-27b"></option>
+            <option value="openai/gpt-oss-120b"></option>
+            <option value="openai/gpt-oss-20b"></option>
+          </datalist>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="ttsModel">ElevenLabs Model</label>
+          <select id="ttsModel">
+            <option value="eleven_v3" selected>eleven_v3 (best quality)</option>
+            <option value="eleven_multilingual_v2">eleven_multilingual_v2</option>
+            <option value="eleven_flash_v2_5">eleven_flash_v2_5 (fast)</option>
+          </select>
+        </div>
+        <div>
+          <label for="voiceId">ElevenLabs Voice</label>
+          <select id="voiceId">
+            <option value="JBFqnCBsd6RMkjVDRZzb" selected>George (male, warm)</option>
+            <option value="nPczCjzI2devNBz1zQrb">Brian (male, deep)</option>
+            <option value="onwK4e9ZLuTAKqWW03F9">Daniel (male, clear)</option>
+            <option value="pNInz6obpgDQGcFmaJgB">Adam (male)</option>
+            <option value="CwhRBWXzGAHq8TQ4Fs17">Roger (male)</option>
+            <option value="IKne3meq5aSn9XLyUdCD">Charlie (male)</option>
+            <option value="21m00Tcm4TlvDq8ikWAM">Rachel (female, clear)</option>
+            <option value="EXAVITQu4vr4xnSDxMgW">Sarah (female, soft)</option>
+            <option value="FGY2WhTYpPnrIDTdsKH5">Laura (female)</option>
+            <option value="pFZP5JQG7iQjIQuC4Bku">Lily (female)</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="ttsEngine">Voice Engine</label>
+          <select id="ttsEngine">
+            <option value="eleven" selected>ElevenLabs (natural voice)</option>
+            <option value="browser">Device Voice (free)</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="ghost" type="button" id="testEleven" style="width:100%">🔑 Test ElevenLabs Key</button>
+        </div>
+      </div>
+      <div class="hint" id="testResult"></div>
+      <button class="ghost" style="margin-top:14px" id="saveSettings">💾 Save Settings</button>
+      <div class="hint">
+        Keys are stored only in your browser (localStorage). This is fine for a demo or assignment;
+        for a real deployment keep keys on your own backend/proxy, not in the browser.
+        Model names may change on Groq's side; if you get an error, check console.groq.com/docs/models.
+      </div>
+    </details>
+  </div>
+
+  <!-- Upload -->
+  <div class="card">
+    <div class="card-head">
+      <div class="badge">1</div>
+      <div>
+        <h3>Upload your bill</h3>
+        <p>A clear photo or PDF of your electricity bill</p>
+      </div>
+    </div>
+    <div class="drop" id="drop">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6"/><path d="m9.5 13.5 2.5-2.5 2.5 2.5"/></svg>
+      </div>
+      <b>Click to upload or drag &amp; drop</b>
+      <small>JPG, PNG, WEBP or PDF · up to 25 MB</small>
+      <input type="file" id="file" accept="image/*,application/pdf" class="hidden">
+    </div>
+    <div id="preview"></div>
+    <button class="primary" id="analyze" disabled>Analyze Bill</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="card hidden" id="progressCard">
+    <div class="card-head"><div><h3>Processing status</h3></div></div>
+    <ul class="steps" id="steps">
+      <li data-s="1"><span class="dot"></span>Reading the bill</li>
+      <li data-s="2"><span class="dot"></span>Preparing the Roman Urdu summary</li>
+      <li data-s="3"><span class="dot"></span>Preparing the audio</li>
+    </ul>
+    <div class="error hidden" id="error"></div>
+  </div>
+
+  <!-- Result -->
+  <div class="card hidden" id="resultCard">
+    <div class="card-head">
+      <div class="badge">2</div>
+      <div>
+        <h3>Your bill summary</h3>
+        <p>Press the Listen button when you want to hear it</p>
+      </div>
+    </div>
+    <div class="summary" id="summaryText"></div>
+    <div class="player" id="playerBox">
+      <button class="accent" id="playBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M19 5a10 10 0 0 1 0 14"/></svg>
+        Listen in Roman Urdu
+      </button>
+      <button class="ghost" id="dlBtn">⬇️ Download MP3</button>
+    </div>
+    <audio id="audio" controls class="hidden"></audio>
+  </div>
+
+  <div class="card hidden" id="detailsCard">
+    <div class="card-head">
+      <div class="badge">3</div>
+      <div>
+        <h3>Extracted bill details</h3>
+        <p>Values exactly as printed on your bill</p>
+      </div>
+    </div>
+    <div class="grid" id="detailsGrid"></div>
+    <div class="notes" id="notes"></div>
+  </div>
+
+</main>
+
+<footer>Asan Bill · For electricity consumers in Pakistan (KPK). Always verify the final amount on your original bill.</footer>
+
+<!-- pdf.js: converts PDF pages to images (Groq cannot read PDFs directly) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const LS = 'asanbill_settings_groq_v2';
+  const MAX_IMG_BYTES = 3.2 * 1024 * 1024;
+  const MAX_PDF_PAGES = 2;
+
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  /* ---------- Settings ---------- */
+  function loadSettings(){
+    try{
+      const s = JSON.parse(localStorage.getItem(LS) || '{}');
+      if(s.groqKey) $('groqKey').value = s.groqKey;
+      if(s.elevenKey) $('elevenKey').value = s.elevenKey;
+      if(s.visionModel) $('visionModel').value = s.visionModel;
+      if(s.textModel) $('textModel').value = s.textModel;
+      if(s.ttsModel) $('ttsModel').value = (s.ttsModel === 'eleven_multilingual_v2') ? 'eleven_v3' : s.ttsModel;
+      if(s.voiceId) $('voiceId').value = s.voiceId;
+      if(s.ttsEngine) $('ttsEngine').value = (s.ttsEngine === 'browser') ? 'browser' : 'eleven';
+    }catch(e){}
+    if(!$('groqKey').value || !$('elevenKey').value) $('settings').open = true;
+  }
+  function saveSettings(){
+    try{
+      localStorage.setItem(LS, JSON.stringify({
+        groqKey: $('groqKey').value.trim(),
+        elevenKey: $('elevenKey').value.trim(),
+        visionModel: $('visionModel').value,
+        textModel: $('textModel').value,
+        ttsModel: $('ttsModel').value,
+        ttsEngine: $('ttsEngine').value,
+        voiceId: $('voiceId').value.trim()
+      }));
+    }catch(e){}
+  }
+  $('saveSettings').onclick = () => { saveSettings(); $('saveSettings').textContent = '✅ Saved'; setTimeout(()=>$('saveSettings').textContent='💾 Save Settings',1500); };
+  loadSettings();
+
+  $('loadModels').onclick = async () => {
+    const key = $('groqKey').value.trim();
+    if(!key){ alert('Please enter your Groq API key first.'); return; }
+    const btn = $('loadModels');
+    btn.textContent = 'Loading...';
+    try{
+      const r = await fetch('https://api.groq.com/openai/v1/models', { headers: { Authorization: 'Bearer ' + key } });
+      const d = await r.json();
+      if(!r.ok) throw new Error(d.error?.message || r.status);
+      const ids = (d.data || []).map(m => m.id).filter(id => !/whisper|tts|guard|orpheus|playai/i.test(id)).sort();
+      $('modelList').innerHTML = ids.map(id => `<option value="${escapeHtml(id)}"></option>`).join('');
+      btn.textContent = '✅ ' + ids.length + ' models found (click a model box above to choose)';
+    }catch(e){
+      btn.textContent = '🔄 Load models from Groq';
+      alert('Could not load models: ' + e.message);
+    }
+  };
+
+  // Tests the ElevenLabs key without spending any credits
+  $('testEleven').onclick = async () => {
+    const key = $('elevenKey').value.trim();
+    const out = $('testResult');
+    if(!key){ out.textContent = 'Please enter your ElevenLabs key first.'; return; }
+    if(/^gsk_/.test(key)){ out.textContent = '❌ This is a Groq key (gsk_...). Please enter your ElevenLabs key here.'; return; }
+    if(/[^\x21-\x7E]/.test(key)){ out.textContent = '❌ The key contains an extra space or non-English character. Copy and paste it again.'; return; }
+    out.textContent = 'Testing...';
+    try{
+      const r = await fetch('https://api.elevenlabs.io/v1/models', { headers: { 'xi-api-key': key } });
+      let d = {}; try{ d = await r.json(); }catch(e){}
+      if(r.ok){ out.textContent = '✅ Key is valid. You can analyze a bill now.'; }
+      else{
+        const det = d.detail;
+        out.textContent = '❌ (' + r.status + ') ' + (det?.message || (typeof det === 'string' ? det : JSON.stringify(det || d)));
+      }
+    }catch(e){ out.textContent = '❌ Network problem: ' + e.message; }
+  };
+
+  /* ---------- File handling ---------- */
+  let pickedImages = [];
+  const drop = $('drop'), fileInput = $('file');
+  drop.onclick = () => fileInput.click();
+  ['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => {e.preventDefault(); drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => {e.preventDefault(); drop.classList.remove('over');}));
+  drop.addEventListener('drop', e => { if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+  fileInput.onchange = () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); };
+
+  function readAsDataURL(file){
+    return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+  }
+  function readAsArrayBuffer(file){
+    return new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsArrayBuffer(file); });
+  }
+  function dataUrlBytes(u){ return Math.floor((u.length - u.indexOf(',') - 1) * 0.75); }
+
+  function canvasToLimitedJpeg(srcCanvas){
+    let scale = Math.min(1, 2000 / Math.max(srcCanvas.width, srcCanvas.height));
+    let quality = 0.88, out;
+    for(let i = 0; i < 6; i++){
+      const c = document.createElement('canvas');
+      c.width = Math.round(srcCanvas.width * scale);
+      c.height = Math.round(srcCanvas.height * scale);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+      ctx.drawImage(srcCanvas, 0, 0, c.width, c.height);
+      out = c.toDataURL('image/jpeg', quality);
+      if(dataUrlBytes(out) <= MAX_IMG_BYTES) return out;
+      scale *= 0.85; quality = Math.max(0.6, quality - 0.06);
+    }
+    return out;
+  }
+  function imageFileToJpeg(file){
+    return readAsDataURL(file).then(dataUrl => new Promise((res, rej) => {
+      const img = new Image();
+      img.onload = () => {
+        const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+        c.getContext('2d').drawImage(img, 0, 0);
+        res(canvasToLimitedJpeg(c));
+      };
+      img.onerror = () => rej(new Error('Could not load the image.'));
+      img.src = dataUrl;
+    }));
+  }
+  async function pdfToJpegs(file){
+    if(!window.pdfjsLib) throw new Error('The PDF reader did not load (check your internet), or upload a photo of the bill instead.');
+    const buf = await readAsArrayBuffer(file);
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    const n = Math.min(pdf.numPages, MAX_PDF_PAGES);
+    const pages = [];
+    for(let p = 1; p <= n; p++){
+      const page = await pdf.getPage(p);
+      const base = page.getViewport({ scale: 1 });
+      const scale = Math.min(3, 2000 / Math.max(base.width, base.height));
+      const vp = page.getViewport({ scale });
+      const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      pages.push(canvasToLimitedJpeg(c));
+    }
+    return pages;
+  }
+
+  async function handleFile(file){
+    resetResults();
+    pickedImages = [];
+    $('analyze').disabled = true;
+    const isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+    const isImg = file.type.startsWith('image/');
+    if(!isPdf && !isImg){ alert('Please upload an image or PDF only.'); return; }
+    if(file.size > 25*1024*1024){ alert('File is too large. Please keep it under 25MB.'); return; }
+    $('preview').innerHTML = '<div class="cap">Preparing file...</div>';
+    try{
+      pickedImages = isPdf ? await pdfToJpegs(file) : [await imageFileToJpeg(file)];
+      $('preview').innerHTML =
+        `<img alt="Bill preview" src="${pickedImages[0]}">` +
+        `<div class="cap">${escapeHtml(file.name)}${pickedImages.length > 1 ? ' (first ' + pickedImages.length + ' pages)' : ''}</div>`;
+      $('analyze').disabled = false;
+    }catch(e){
+      $('preview').innerHTML = '';
+      alert('Problem reading the file: ' + e.message);
+    }
+  }
+
+  /* ---------- UI helpers ---------- */
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function setStep(n, state){
+    const li = document.querySelector(`#steps li[data-s="${n}"]`);
+    li.className = state;
+    li.querySelector('.dot').textContent = state === 'done' ? '✓' : state === 'fail' ? '!' : '';
+  }
+  let audioUrl = null, audioBlob = null, lastSummary = '';
+  function resetResults(){
+    ['progressCard','resultCard','detailsCard'].forEach(id => $(id).classList.add('hidden'));
+    $('error').classList.add('hidden');
+    [1,2,3].forEach(n => setStep(n, ''));
+    try{ speechSynthesis.cancel(); }catch(e){}
+    const a = $('audio'); a.pause(); a.removeAttribute('src'); a.classList.add('hidden');
+    if(audioUrl){ URL.revokeObjectURL(audioUrl); audioUrl = null; }
+    audioBlob = null;
+  }
+  function showError(msg){ const e = $('error'); e.textContent = msg; e.classList.remove('hidden'); }
+
+  /* ---------- Groq (OpenAI-compatible chat completions) ---------- */
+  async function groqChat({ model, messages, json = false, temperature = 0, max_tokens = 1024 }){
+    const key = $('groqKey').value.trim();
+    if(!key) throw new Error('Please enter your Groq API key in Settings.');
+    const body = { model, messages, temperature, max_tokens };
+    if(json) body.response_format = { type: 'json_object' };
+    if(/qwen/i.test(model)) body.reasoning_effort = 'none';
+    let r, data;
+    for(let attempt = 0; attempt < 4; attempt++){
+      r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify(body)
+      });
+      data = await r.json().catch(() => ({}));
+      const msg = data.error?.message || '';
+      if(r.status === 400 && body.reasoning_effort && /reasoning/i.test(msg)){ delete body.reasoning_effort; continue; }
+      if(r.status === 429 && !/too large/i.test(msg) && attempt < 3){
+        const m = msg.match(/try again in\s+([\d.]+)\s*(ms|s)/i);
+        let wait = m ? parseFloat(m[1]) * (m[2].toLowerCase() === 'ms' ? 1 : 1000) : 8000;
+        wait = Math.min(Math.max(wait, 1000) + 500, 30000);
+        await new Promise(res => setTimeout(res, wait));
+        continue;
+      }
+      break;
+    }
+    if(!r.ok){
+      let m = 'Groq error (' + r.status + '): ' + (data.error?.message || 'unknown');
+      if(r.status === 429) m += '\n\nThe Groq free limit was reached. Wait a minute and try again, or choose another model in Settings (for example openai/gpt-oss-120b).';
+      if(r.status === 404) m += '\n\nGroq may have removed this model. Click "Load models from Groq" in Settings and choose a new one.';
+      const err = new Error(m);
+      err.status = r.status; throw err;
+    }
+    const text = (data.choices?.[0]?.message?.content || '').replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+    if(!text) throw new Error('Groq returned an empty response.');
+    return text;
+  }
+
+  const EXTRACT_PROMPT = `You are reading a Pakistani electricity bill (KPK: PESCO / TESCO, or similar DISCO). The bill may be in English and/or Urdu.
+Extract ONLY what is clearly printed on the bill. NEVER guess, estimate, calculate or invent a value. If a field is not visible or not clear, use null for it.
+
+Return a single JSON object with exactly these keys:
+{
+  "is_electricity_bill": true or false,
+  "billing_month": string or null,
+  "due_date": string or null,
+  "current_bill_amount": number or null,
+  "previous_bill_amount": number or null,
+  "units_consumed": number or null,
+  "total_taxes_and_charges": number or null,
+  "payable_before_due_date": number or null,
+  "payable_after_due_date": number or null,
+  "late_payment_surcharge": number or null,
+  "notes": string or null
+}
+
+Field rules:
+- is_electricity_bill: true only if the document is an electricity bill.
+- billing_month: the billing month as printed (e.g. "NOV 2026").
+- due_date: the due date as printed, written as "DD Month YYYY" (e.g. "25 November 2026").
+- current_bill_amount: this month's bill amount (current month total, normally the amount payable within due date), PKR.
+- previous_bill_amount: the billed amount of the PREVIOUS month, read from the bill's history/consumption table (the most recent month before the current billing month). null if no history is printed.
+- units_consumed: total units (kWh) consumed in the current billing month, as printed. If there are several meter lines (e.g. peak/off-peak) and a printed total exists, use that total; otherwise null.
+- total_taxes_and_charges: total of taxes and additional charges (GST, electricity duty, TV fee, FC surcharge, NJ surcharge, fuel price adjustment, etc.). Use a printed total if one exists. If only individual line items are printed, add up exactly those printed items. If none are printed, null. Say in notes how you got it.
+- payable_before_due_date: amount payable within due date, exactly as printed.
+- payable_after_due_date: amount payable after due date (including late payment surcharge), exactly as printed.
+- late_payment_surcharge: the LPS amount ONLY if printed separately; otherwise null.
+- notes: short English note about anything unclear, unreadable or missing (or null).
+
+Numbers must be plain numbers (no commas, no "Rs."). Output JSON only, no extra text.`;
+
+  function toNum(v){
+    if(v === null || v === undefined || v === '') return null;
+    if(typeof v === 'number') return isFinite(v) ? v : null;
+    const n = parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
+    return isFinite(n) ? n : null;
+  }
+  function toStr(v){ return (v === null || v === undefined || String(v).trim() === '' || String(v).toLowerCase() === 'null') ? null : String(v).trim(); }
+  function parseJsonLoose(text){
+    try{ return JSON.parse(text); }catch(e){}
+    const m = text.match(/\{[\s\S]*\}/);
+    if(m){ try{ return JSON.parse(m[0]); }catch(e){} }
+    throw new Error('Could not parse the bill data. Please try again or upload a clearer image.');
+  }
+
+  async function extractBill(){
+    const content = [{ type: 'text', text: EXTRACT_PROMPT }];
+    pickedImages.forEach(u => content.push({ type: 'image_url', image_url: { url: u } }));
+    const args = { model: $('visionModel').value, messages: [{ role: 'user', content }], temperature: 0.1, max_tokens: 700 };
+    let text;
+    try{ text = await groqChat({ ...args, json: true }); }
+    catch(e){
+      if(e.status === 400) text = await groqChat({ ...args, json: false });
+      else throw e;
+    }
+    const raw = parseJsonLoose(text);
+    return {
+      is_electricity_bill: raw.is_electricity_bill !== false,
+      billing_month: toStr(raw.billing_month),
+      due_date: toStr(raw.due_date),
+      current_bill_amount: toNum(raw.current_bill_amount),
+      previous_bill_amount: toNum(raw.previous_bill_amount),
+      units_consumed: toNum(raw.units_consumed),
+      total_taxes_and_charges: toNum(raw.total_taxes_and_charges),
+      payable_before_due_date: toNum(raw.payable_before_due_date),
+      payable_after_due_date: toNum(raw.payable_after_due_date),
+      late_payment_surcharge: toNum(raw.late_payment_surcharge),
+      notes: toStr(raw.notes)
+    };
+  }
+
+  // Roman Urdu summary (shown on screen AND spoken aloud)
+  async function makeSummary(bill){
+    const facts = {
+      billing_month: bill.billing_month,
+      due_date: bill.due_date,
+      current_bill_amount: bill.current_bill_amount,
+      previous_bill_amount: bill.previous_bill_amount,
+      units_consumed: bill.units_consumed,
+      total_taxes_and_charges: bill.total_taxes_and_charges,
+      payable_before_due_date: bill.payable_before_due_date,
+      payable_after_due_date: bill.payable_after_due_date
+    };
+    const prompt = `Aap Pakistan ke bijli bill ke liye Roman Urdu voice narrator hain.
+Neeche bill ki tasdeeq-shuda maloomat di gayi hain. Aik saada aur moaddab Roman Urdu script likhein jo awaaz mein parha jayega.
+
+Sakht hidayaat:
+- Sirf Roman Urdu (Latin huroof mein Urdu zubaan). English jumlay, Urdu script, Devanagari/Hindi script, headings, bullets aur emojis bilkul nahi.
+- Zubaan khalis Urdu ho. Hindi/Sanskrit ke alfaaz bilkul istemal na karein.
+- Mana alfaaz (misal): dhanyavaad, kripya, ank, mahina, prayog, raashi, samay, vidyut, shulk, anumati, dinaank, poorn, avashyak.
+- Un ki jagah Urdu alfaaz: shukriya, meherbani, rakam, maheena, istemal, adaigi, bijli, mehsool, ijazat, tareekh, mukammal, zaroori, aakhri tareekh.
+- Spelling aisi rakhein jis se Urdu talaffuz aaye, misal: "hai", "hain", "aap", "ki", "ka", "ko", "aur", "se", "tak", "kar dein".
+- "Assalam-o-Alaikum" se shuru karein. Mukhatib se naam na poochhein aur kisi naam se na pukarein.
+- Har raqam ko alfaaz mein likhein. Koi digit (0-9), Rs, PKR ya symbol bilkul nahi. Misal: "aath hazaar paanch sau rupay".
+- Saal aur tareekh bhi alfaaz mein likhein, misal: "paccheess november do hazaar chhabbees". Units bhi alfaaz mein.
+- Taxes ke liye "tax aur izafi charges" aur due date ke liye "aakhri tareekh" kahen.
+- Sirf diye gaye JSON mein mojood maloomat batayein. Koi raqam ya tareekh khud se na banayein. Null fields ko chhor dein.
+- Aakhir mein yeh kahen: "Agar aap ne pehle hi bill jama karwa diya hai to dobara adaigi na karein aur apni jama shuda raqam ki tasdeeq kar lein. Agar abhi jama nahi karwaya to bill par di gayi aakhri tareekh se pehle adaigi kar dein."
+- 5 se 7 chhotay jumlay. Sirf Roman Urdu text dein.
+
+Bill data:
+${JSON.stringify(facts)}`;
+    const text = await groqChat({
+      model: $('textModel').value,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.3, max_tokens: 600
+    });
+    return text.replace(/[*_#`]/g, '').trim();
+  }
+
+  /* ---------- Voice (starts ONLY when the person presses Listen) ---------- */
+  function speakBrowser(text){
+    if(!('speechSynthesis' in window)){ alert('This browser does not support speech.'); return; }
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const voices = speechSynthesis.getVoices();
+    const v = voices.find(x => /^ur(-|_)?pk/i.test(x.lang)) || voices.find(x => /^ur/i.test(x.lang)) || voices.find(x => /^hi(-|_)?in/i.test(x.lang)) || voices.find(x => /^hi/i.test(x.lang)) || voices.find(x => /^en(-|_)?in/i.test(x.lang));
+    if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = 'en-IN'; }
+    u.rate = 0.9;
+    speechSynthesis.speak(u);
+  }
+  async function textToSpeech(text){
+    const key = $('elevenKey').value.trim();
+    if(!key) throw new Error('Please enter your ElevenLabs API key in Settings.');
+    const voice = $('voiceId').value.trim() || 'JBFqnCBsd6RMkjVDRZzb';
+    const r = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${encodeURIComponent(voice)}?output_format=mp3_44100_128`, {
+      method: 'POST',
+      headers: { 'xi-api-key': key, 'Content-Type': 'application/json', 'Accept': 'audio/mpeg' },
+      body: JSON.stringify({
+        text,
+        model_id: $('ttsModel').value,
+        voice_settings: { stability: 0.55, similarity_boost: 0.75, style: 0.1, use_speaker_boost: true, speed: 0.92 }
+      })
+    });
+    if(!r.ok){
+      let msg = ''; try{ const j = await r.json(); msg = j.detail?.message || JSON.stringify(j.detail || j); }catch(e){}
+      let hint = '';
+      if(r.status === 401){
+        hint = '\n\nThe ElevenLabs key is not valid. Please check:\n' +
+          '• The key was copied from elevenlabs.io > Developers > API Keys (usually starts with "sk_")\n' +
+          '• You did not paste the Groq key ("gsk_...") in this box\n' +
+          '• If the key is restricted, Text to Speech permission is set to "Access"\n' +
+          '• There is no extra space or incomplete copy around the key';
+      }
+      throw new Error('ElevenLabs error (' + r.status + '): ' + msg + hint);
+    }
+    return await r.blob();
+  }
+
+  /* ---------- Details rendering ---------- */
+  const fmtMoney = v => (v === null || v === undefined) ? null : 'Rs. ' + Number(v).toLocaleString('en-PK');
+  function renderDetails(b){
+    const items = [
+      ['Billing Month', b.billing_month, false],
+      ['Due Date', b.due_date, false],
+      ['Current Bill', fmtMoney(b.current_bill_amount), true],
+      ['Previous Month Bill', fmtMoney(b.previous_bill_amount), false],
+      ['Units Consumed', b.units_consumed != null ? Number(b.units_consumed).toLocaleString('en-PK') + ' units' : null, false],
+      ['Taxes and Additional Charges', fmtMoney(b.total_taxes_and_charges), false],
+      ['Payable Before Due Date', fmtMoney(b.payable_before_due_date), true],
+      ['Payable After Due Date', fmtMoney(b.payable_after_due_date), true],
+      ['Late Payment Surcharge (LPS)', fmtMoney(b.late_payment_surcharge), false]
+    ];
+    $('detailsGrid').innerHTML = items.map(([k,v,hi]) =>
+      `<div class="item ${hi?'hi':''}"><div class="k">${k}</div>` +
+      (v ? `<div class="v">${escapeHtml(v)}</div>` : `<div class="v na">Not available on bill</div>`) + `</div>`
+    ).join('');
+    $('notes').textContent = b.notes ? 'Note: ' + b.notes : '';
+    $('detailsCard').classList.remove('hidden');
+  }
+
+  /* ---------- Main flow ---------- */
+  $('analyze').onclick = async () => {
+    if(!pickedImages.length) return;
+    saveSettings();
+    resetResults();
+    $('progressCard').classList.remove('hidden');
+    $('analyze').disabled = true;
+    let step = 1;
+    try{
+      setStep(1,'active');
+      const bill = await extractBill();
+      if(!bill.is_electricity_bill) throw new Error('This does not look like an electricity bill. Please upload a clear photo or the correct PDF.');
+      setStep(1,'done'); renderDetails(bill);
+
+      step = 2; setStep(2,'active');
+      const summary = await makeSummary(bill);
+      lastSummary = summary;
+      $('summaryText').textContent = summary;
+      $('resultCard').classList.remove('hidden');
+      setStep(2,'done');
+
+      // The audio is only PREPARED here. Nothing plays until the person presses "Listen".
+      step = 3; setStep(3,'active');
+      if($('ttsEngine').value === 'browser'){
+        setStep(3,'done');
+      }else{
+        try{
+          audioBlob = await textToSpeech(summary);
+          audioUrl = URL.createObjectURL(audioBlob);
+          const a = $('audio'); a.src = audioUrl; a.classList.remove('hidden');
+          setStep(3,'done');
+        }catch(ttsErr){
+          setStep(3,'fail');
+          showError(ttsErr.message + '\n\nThe summary and details are shown above. Press "Listen in Roman Urdu" to hear it with your device voice.');
+        }
+      }
+    }catch(err){
+      setStep(step,'fail');
+      showError(err.message || String(err));
+    }finally{
+      $('analyze').disabled = false;
+    }
+  };
+
+  $('playBtn').onclick = () => {
+    const a = $('audio');
+    if(a.src){ try{ speechSynthesis.cancel(); }catch(e){} a.currentTime = 0; a.play(); }
+    else if(lastSummary){ speakBrowser(lastSummary); }
+    else{ alert('The audio is not ready yet.'); }
+  };
+  $('dlBtn').onclick = () => {
+    if(!audioUrl){ alert('The audio is not ready yet.'); return; }
+    const l = document.createElement('a'); l.href = audioUrl; l.download = 'asan-bill-summary.mp3'; l.click();
+  };
+})();
+</script>
+</body>
+</html>
